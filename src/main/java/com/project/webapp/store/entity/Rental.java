@@ -9,6 +9,9 @@ import java.sql.Date;
 
 @Entity
 @Table(name = "rental",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "unique_rental", columnNames = {"rental_date", "inventory_id", "customer_id"})
+        },
         indexes = {
             @Index(name = "idx_fk_inventory_id", columnList = "inventory_id"),
             @Index(name = "idx_fk_customer_id", columnList = "customer_id"),

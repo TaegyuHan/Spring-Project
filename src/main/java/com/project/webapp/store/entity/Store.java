@@ -9,7 +9,9 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "store",
-        uniqueConstraints = @UniqueConstraint(name = "idx_unique_manager", columnNames = "manager_staff_id"),
+        uniqueConstraints = {
+                @UniqueConstraint(name = "idx_unique_manager", columnNames = "manager_staff_id")
+        },
         indexes = {
             @Index(name = "idx_fk_address_id", columnList = "address_id")
         })
