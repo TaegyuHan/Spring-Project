@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# draw.io 백업 파일
+*.bkp
+*.dtmp

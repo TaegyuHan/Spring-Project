@@ -4,6 +4,8 @@ MySQL의 예제 데이터베이스인 sakila는 DVD 대여 상점과 관련된 �
 
 sakila 데이터베이스는 다음과 같은 테이블을 포함합니다.
 
+[[DB Schema 보기]](https://drive.google.com/file/d/17WvRDoheIKtEZUAYl7qYIBKp-Gv37J7I/view?usp=sharing)
+
 ---
 
 # `actor`
