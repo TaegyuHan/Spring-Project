@@ -11,7 +11,7 @@ import java.sql.Timestamp;
                 @Index(name = "idx_fk_film_id", columnList = "film_id")
         }
 )
-public class FilterActor {
+public class FilmActor {
 
     @EmbeddedId
     private FilmActorId id;
