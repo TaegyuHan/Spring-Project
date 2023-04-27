@@ -1,4 +1,4 @@
-package com.project.webapp.user.entity;
+package com.project.webapp.film.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.UpdateTimestamp;
