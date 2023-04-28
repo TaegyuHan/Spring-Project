@@ -1,12 +1,20 @@
 package com.project.webapp.area.entity;
 
+
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @Table(name = "city",
         indexes = {
                 @Index(name = "idx_fk_country_id", columnList = "country_id")
