@@ -3,12 +3,20 @@ package com.project.webapp.store.entity;
 import com.project.webapp.user.entity.Customer;
 import com.project.webapp.user.entity.Staff;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @Table(name = "payment",
     indexes = {
         @Index(name = "idx_fk_staff_id", columnList = "staff_id"),
@@ -42,6 +50,7 @@ public class Payment {
             columnDefinition = "DECIMAL(5,2)")
     private BigDecimal amount;
 
+    @CreationTimestamp
     @Column(name = "payment_date", nullable = false)
     private Timestamp paymentDate;
 
