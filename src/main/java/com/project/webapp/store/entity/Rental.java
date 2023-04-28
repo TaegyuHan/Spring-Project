@@ -3,11 +3,20 @@ package com.project.webapp.store.entity;
 import com.project.webapp.user.entity.Customer;
 import com.project.webapp.user.entity.Staff;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Date;
 
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @Table(name = "rental",
         uniqueConstraints = {
                 @UniqueConstraint(name = "unique_rental", columnNames = {"rental_date", "inventory_id", "customer_id"})
@@ -25,6 +34,7 @@ public class Rental {
     @Column(name = "rental_id")
     private int rentalId;
 
+    @CreationTimestamp
     @Column(name = "rental_date", nullable = false)
     private Date rentalDate;
 
@@ -46,6 +56,7 @@ public class Rental {
             foreignKey = @ForeignKey(name = "fk_rental_staff"))
     private Staff staff;
 
+    @UpdateTimestamp
     @Column(name = "last_update", nullable = false,
             columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Date lastUpdate;
