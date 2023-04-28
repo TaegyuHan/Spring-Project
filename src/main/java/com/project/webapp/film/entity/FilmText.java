@@ -1,9 +1,16 @@
 package com.project.webapp.film.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @Table(name = "film_text")
 public class FilmText {
 
