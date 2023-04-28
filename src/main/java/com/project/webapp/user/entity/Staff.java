@@ -3,11 +3,19 @@ package com.project.webapp.user.entity;
 import com.project.webapp.area.entity.Address;
 import com.project.webapp.store.entity.Store;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @Table(name = "staff",
         indexes = {
                 @Index(name = "idx_fk_store_id", columnList = "store_id"),
@@ -52,6 +60,7 @@ public class Staff {
     @Column(name = "password", length = 40)
     private String password;
 
+    @UpdateTimestamp
     @Column(name = "last_update", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp lastUpdate;
 }
