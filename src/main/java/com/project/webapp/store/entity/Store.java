@@ -3,11 +3,18 @@ package com.project.webapp.store.entity;
 import com.project.webapp.area.entity.Address;
 import com.project.webapp.user.entity.Staff;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @Table(name = "store",
         uniqueConstraints = {
                 @UniqueConstraint(name = "idx_unique_manager", columnNames = "manager_staff_id")
@@ -24,7 +31,7 @@ public class Store {
     private Integer storeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_staff_id", nullable = false,
+    @JoinColumn(name = "manager_staff_id",
             foreignKey = @ForeignKey(name = "fk_store_staff"))
     private Staff managerStaff;
 
