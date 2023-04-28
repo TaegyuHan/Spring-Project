@@ -2,11 +2,16 @@ package com.project.webapp.film.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Embeddable
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
 public class FilmCategoryId implements Serializable {
 
