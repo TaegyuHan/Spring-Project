@@ -3,12 +3,19 @@ package com.project.webapp.user.entity;
 import com.project.webapp.area.entity.Address;
 import com.project.webapp.store.entity.Store;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Timestamp;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @Table(name = "customer",
         indexes = {
             @Index(name = "idx_fk_store_id", columnList = "store_id"),
@@ -43,7 +50,7 @@ public class Customer {
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(name = "create_date", nullable = false)
     private Timestamp createDate;
 
