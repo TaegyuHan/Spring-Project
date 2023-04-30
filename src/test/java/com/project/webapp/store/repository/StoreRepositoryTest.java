@@ -4,7 +4,6 @@ import com.project.webapp.area.entity.*;
 import com.project.webapp.area.repository.AddressRepository;
 import com.project.webapp.area.repository.CityRepository;
 import com.project.webapp.area.repository.CountryRepository;
-import com.project.webapp.area.repository.repository.StoreRepository;
 import com.project.webapp.store.entity.Store;
 import com.project.webapp.store.entity.StoreTest;
 import org.junit.jupiter.api.Test;
