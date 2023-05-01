@@ -23,17 +23,17 @@ public class CountryController {
     private CountryService countryService;
 
     @PostMapping("/country")
-    public ResponseEntity<ResponseDTO<CountryIdNameDTO>> createOneCountry(
+    public ResponseEntity<ResponseDTO<CountryIdNameDTO>> createCountry(
             @Valid @RequestBody CountryNameDTO countryDTO
     ) {
-        CountryIdNameDTO dto = countryService.createOne(countryDTO);
+        CountryIdNameDTO dto = countryService.create(countryDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseSuccessDTO<>(HttpStatus.CREATED.value(), dto));
     }
 
     @GetMapping("/countries")
-    public ResponseEntity<ResponseDTO<List<CountryIdNameDTO>>> readCountries() {
+    public ResponseEntity<ResponseDTO<List<CountryIdNameDTO>>> readCountriesAll() {
 
         List<CountryIdNameDTO> dtoList = countryService.readAll();
 
@@ -47,7 +47,7 @@ public class CountryController {
             @Valid @RequestBody CountryNameDTO countryDTO
     ) {
 
-        CountryIdNameDTO dto = countryService.updateOne(id, countryDTO);
+        CountryIdNameDTO dto = countryService.update(id, countryDTO);
 
         return ResponseEntity.ok()
                 .body(new ResponseSuccessDTO<>(HttpStatus.OK.value(), dto));
@@ -57,7 +57,7 @@ public class CountryController {
     public ResponseEntity<ResponseDTO<Integer>> deleteCountry(
             @PathVariable @NotBlank Integer id
     ) {
-        countryService.deleteOne(id);
+        countryService.delete(id);
 
         return ResponseEntity.ok()
                 .body(new ResponseSuccessDTO<>(HttpStatus.NO_CONTENT.value()));

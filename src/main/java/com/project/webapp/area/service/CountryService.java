@@ -26,7 +26,7 @@ public class CountryService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public CountryIdNameDTO createOne(CountryNameDTO countryDTO) {
+    public CountryIdNameDTO create(CountryNameDTO countryDTO) {
 
         if (countryRepository.findByCountry(countryDTO.getCountry()).isPresent()) { // 중복 데이터 검사
             throw new AlreadyExistsDataException("The name of the country already exists.", countryDTO);
@@ -44,7 +44,7 @@ public class CountryService {
         return modelMapper.map(entityList, listType);
     }
 
-    public CountryIdNameDTO updateOne(Integer id, CountryNameDTO countryDTO) {
+    public CountryIdNameDTO update(Integer id, CountryNameDTO countryDTO) {
         Optional<Country> check;
 
         // 업데이트 데이터 존재 확인
@@ -65,7 +65,7 @@ public class CountryService {
         return modelMapper.map(savedEntity, CountryIdNameDTO.class);
     }
 
-    public void deleteOne(Integer id) {
+    public void delete(Integer id) {
         if (countryRepository.findById(id).isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);
         }
