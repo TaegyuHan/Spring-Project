@@ -38,7 +38,7 @@ public class LanguageService {
             throw new NonExistentDataException("Data does not exist.", id);
         }
 
-        return modelMapper.map(category, LanguageSearchDTO.class);
+        return modelMapper.map(category.get(), LanguageSearchDTO.class);
     }
 
     public LanguageSearchDTO update(Integer id, LanguageSaveDTO languageSaveDTO) {

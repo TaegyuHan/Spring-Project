@@ -62,4 +62,3 @@ public class LanguageController {
                 .body(new ResponseSuccessDTO<>(HttpStatus.NO_CONTENT.value()));
     }
 }
-
