@@ -1,8 +1,8 @@
 package com.project.webapp.area.service;
 
-import com.project.webapp.area.dto.CityIdNameCountryIdDTO;
-import com.project.webapp.area.dto.CityIdNameDTO;
-import com.project.webapp.area.dto.CityNameCountryIdDTO;
+import com.project.webapp.area.dto.CitySearchDTO;
+import com.project.webapp.area.dto.CitySearchByCountryIdDTO;
+import com.project.webapp.area.dto.CitySaveDTO;
 import com.project.webapp.area.entity.City;
 import com.project.webapp.area.entity.Country;
 import com.project.webapp.area.repository.CityRepository;
@@ -30,50 +30,52 @@ public class CityService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public CityIdNameCountryIdDTO create(CityNameCountryIdDTO cityNameCountryIdDTO) {
+    public CitySearchDTO create(CitySaveDTO citySaveDTO) {
 
-        if (cityRepository.findByCountry_CountryIdAndCity(cityNameCountryIdDTO.getCountryId(), cityNameCountryIdDTO.getCity())
-                .isPresent()) { // 중복 데이터 검사
-            throw new AlreadyExistsDataException("The name of the city already exists.", cityNameCountryIdDTO);
+        // 중복 데이터 검사
+        if (cityRepository.findByCountry_CountryIdAndCity(citySaveDTO.getCountryId(), citySaveDTO.getCity())
+                .isPresent()) {
+            throw new AlreadyExistsDataException("The name of the city already exists.", citySaveDTO);
         }
 
-        Optional<Country> country = countryRepository.findById(cityNameCountryIdDTO.getCountryId());
+        // 나라 존재 확인
+        Optional<Country> country = countryRepository.findById(citySaveDTO.getCountryId());
         if (country.isEmpty()) {
-            throw new NonExistentDataException("CountryId not found", cityNameCountryIdDTO);
+            throw new NonExistentDataException("CountryId not found", citySaveDTO);
         }
 
-        modelMapper.typeMap(CityNameCountryIdDTO.class, City.class).addMappings(mapper -> {
+        modelMapper.typeMap(CitySaveDTO.class, City.class).addMappings(mapper -> {
             mapper.skip(City::setCityId);
-            mapper.map(CityNameCountryIdDTO::getCity, City::setCity);
+            mapper.map(CitySaveDTO::getCity, City::setCity);
         });
 
-        City newEntity = modelMapper.map(cityNameCountryIdDTO, City.class);
+        City newEntity = modelMapper.map(citySaveDTO, City.class);
         newEntity.setCountry(country.get());
         City savedEntity = cityRepository.save(newEntity);
 
-        return modelMapper.map(savedEntity, CityIdNameCountryIdDTO.class);
+        return modelMapper.map(savedEntity, CitySearchDTO.class);
     }
 
-    public List<CityIdNameDTO> findByCountryId(Integer countryId) {
+    public List<CitySearchByCountryIdDTO> findByCountryId(Integer countryId) {
 
         // country 존재 확인
         if (countryRepository.findById(countryId).isEmpty()) {
-            throw new NonExistentDataException("country does not exist.");
+            throw new NonExistentDataException("countryId does not exist.");
         }
 
         List<City> entityList = cityRepository.findByCountry_CountryId(countryId);
 
-        Type listType = new TypeToken<List<CityIdNameDTO>>() {}.getType();
+        Type listType = new TypeToken<List<CitySearchByCountryIdDTO>>() {}.getType();
 
-        modelMapper.typeMap(City.class, CityIdNameDTO.class).addMappings(mapper -> {
-            mapper.map(City::getCity, CityIdNameDTO::setCity);
-            mapper.map(City::getCity, CityIdNameDTO::setCity);
+        modelMapper.typeMap(City.class, CitySearchByCountryIdDTO.class).addMappings(mapper -> {
+            mapper.map(City::getCity, CitySearchByCountryIdDTO::setCity);
+            mapper.map(City::getCity, CitySearchByCountryIdDTO::setCity);
         });
 
         return modelMapper.map(entityList, listType);
     }
 
-    public CityIdNameCountryIdDTO update(Integer id, CityNameCountryIdDTO cityIdNameCountryIdDTO) {
+    public CitySearchDTO update(Integer id, CitySaveDTO cityIdNameCountryIdDTO) {
         Optional<City> check;
 
         // city 존재하지 않음
@@ -81,7 +83,7 @@ public class CityService {
         if (check.isEmpty()) {
             throw new NonExistentDataException("city does not exist.");
         }
-        City findEntity = check.get();
+        City updateEntity = check.get();
 
         // 이미 존재합니다.
         check = cityRepository.findByCountry_CountryIdAndCity(
@@ -89,23 +91,23 @@ public class CityService {
         if (check.isPresent()) {
             throw new AlreadyExistsDataException("Data already exists.", cityIdNameCountryIdDTO);
         }
-        findEntity.setCity(cityIdNameCountryIdDTO.getCity());
-        findEntity.setCityId(cityIdNameCountryIdDTO.getCountryId());
-        City savedEntity = cityRepository.save(findEntity);
+        updateEntity.setCity(cityIdNameCountryIdDTO.getCity());
+        updateEntity.setCityId(cityIdNameCountryIdDTO.getCountryId());
+        City savedEntity = cityRepository.save(updateEntity);
 
 
-        modelMapper.typeMap(City.class, CityNameCountryIdDTO.class).addMappings(mapper -> {
-            mapper.map(City::getCityId, CityNameCountryIdDTO::setCity);
-            mapper.map(City::getCity, CityNameCountryIdDTO::setCity);
+        modelMapper.typeMap(City.class, CitySaveDTO.class).addMappings(mapper -> {
+            mapper.map(City::getCityId, CitySaveDTO::setCity);
+            mapper.map(City::getCity, CitySaveDTO::setCity);
             mapper.map(src -> src.getCountry().getCountryId(),
-                    CityNameCountryIdDTO::setCountryId);
+                    CitySaveDTO::setCountryId);
         });
-        return modelMapper.map(savedEntity, CityIdNameCountryIdDTO.class);
+        return modelMapper.map(savedEntity, CitySearchDTO.class);
     }
 
     public void delete(Integer id) {
         if (cityRepository.findById(id).isEmpty()) {
-            throw new NonExistentDataException("Data does not exist.", id);
+            throw new NonExistentDataException("CityId not found", id);
         }
         cityRepository.deleteById(id);
     }

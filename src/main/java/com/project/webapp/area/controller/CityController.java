@@ -1,9 +1,10 @@
 package com.project.webapp.area.controller;
 
-import com.project.webapp.area.dto.CityIdNameCountryIdDTO;
-import com.project.webapp.area.dto.CityIdNameDTO;
-import com.project.webapp.area.dto.CityNameCountryIdDTO;
+import com.project.webapp.area.dto.CitySearchDTO;
+import com.project.webapp.area.dto.CitySearchByCountryIdDTO;
+import com.project.webapp.area.dto.CitySaveDTO;
 import com.project.webapp.area.service.CityService;
+import com.project.webapp.config.ApiVersionController;
 import com.project.webapp.config.dto.ResponseDTO;
 import com.project.webapp.config.dto.ResponseSuccessDTO;
 import jakarta.validation.Valid;
@@ -17,38 +18,38 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(ApiVersionController.URL_API_VERSION)
 public class CityController {
 
     @Autowired
     private CityService cityService;
 
     @PostMapping("/city")
-    public ResponseEntity<ResponseDTO<CityIdNameCountryIdDTO>> createCity(
-            @Valid @RequestBody CityNameCountryIdDTO cityNameCountryIdDTO
+    public ResponseEntity<ResponseDTO<CitySearchDTO>> createCity(
+            @Valid @RequestBody CitySaveDTO citySaveDTO
     ) {
-        CityIdNameCountryIdDTO dto = cityService.create(cityNameCountryIdDTO);
+        CitySearchDTO dto = cityService.create(citySaveDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseSuccessDTO<>(HttpStatus.CREATED.value(), dto));
     }
 
     @GetMapping("/cities")
-    public ResponseEntity<ResponseDTO<List<CityIdNameDTO>>> readCitiesByCountryId(
+    public ResponseEntity<ResponseDTO<List<CitySearchByCountryIdDTO>>> readCitiesByCountryId(
             @RequestParam(name = "country_id") @NotBlank Integer countryId
     ) {
-        List<CityIdNameDTO> dtoList = cityService.findByCountryId(countryId);
+        List<CitySearchByCountryIdDTO> dtoList = cityService.findByCountryId(countryId);
 
         return ResponseEntity.ok()
                 .body(new ResponseSuccessDTO<>(HttpStatus.OK.value(), dtoList));
     }
 
     @PutMapping("/city/{id}")
-    public ResponseEntity<ResponseDTO<CityIdNameCountryIdDTO>> updateCitise(
+    public ResponseEntity<ResponseDTO<CitySearchDTO>> updateCitise(
             @PathVariable @NotBlank Integer id,
-            @Valid @RequestBody CityNameCountryIdDTO cityIdNameCountryIdDTO
+            @Valid @RequestBody CitySaveDTO cityIdNameCountryIdDTO
     ) {
-        CityIdNameCountryIdDTO dto = cityService.update(id, cityIdNameCountryIdDTO);
+        CitySearchDTO dto = cityService.update(id, cityIdNameCountryIdDTO);
 
         return ResponseEntity.ok()
                 .body(new ResponseSuccessDTO<>(HttpStatus.OK.value(), dto));

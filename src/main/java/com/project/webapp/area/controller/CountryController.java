@@ -1,9 +1,10 @@
 package com.project.webapp.area.controller;
 
 
-import com.project.webapp.area.dto.CountryIdNameDTO;
-import com.project.webapp.area.dto.CountryNameDTO;
+import com.project.webapp.area.dto.CountrySearchDTO;
+import com.project.webapp.area.dto.CountrySaveDTO;
 import com.project.webapp.area.service.CountryService;
+import com.project.webapp.config.ApiVersionController;
 import com.project.webapp.config.dto.ResponseDTO;
 import com.project.webapp.config.dto.ResponseSuccessDTO;
 import jakarta.validation.Valid;
@@ -16,38 +17,38 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(ApiVersionController.URL_API_VERSION)
 public class CountryController {
 
     @Autowired
     private CountryService countryService;
 
     @PostMapping("/country")
-    public ResponseEntity<ResponseDTO<CountryIdNameDTO>> createCountry(
-            @Valid @RequestBody CountryNameDTO countryDTO
+    public ResponseEntity<ResponseDTO<CountrySearchDTO>> createCountry(
+            @Valid @RequestBody CountrySaveDTO countryDTO
     ) {
-        CountryIdNameDTO dto = countryService.create(countryDTO);
+        CountrySearchDTO dto = countryService.create(countryDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseSuccessDTO<>(HttpStatus.CREATED.value(), dto));
     }
 
     @GetMapping("/countries")
-    public ResponseEntity<ResponseDTO<List<CountryIdNameDTO>>> readCountriesAll() {
+    public ResponseEntity<ResponseDTO<List<CountrySearchDTO>>> readCountriesAll() {
 
-        List<CountryIdNameDTO> dtoList = countryService.readAll();
+        List<CountrySearchDTO> dtoList = countryService.readAll();
 
         return ResponseEntity.ok()
                 .body(new ResponseSuccessDTO<>(HttpStatus.OK.value(), dtoList));
     }
 
     @PutMapping("/country/{id}")
-    public ResponseEntity<ResponseDTO<CountryIdNameDTO>> updateCountry(
+    public ResponseEntity<ResponseDTO<CountrySearchDTO>> updateCountry(
             @PathVariable @NotBlank Integer id,
-            @Valid @RequestBody CountryNameDTO countryDTO
+            @Valid @RequestBody CountrySaveDTO countryDTO
     ) {
 
-        CountryIdNameDTO dto = countryService.update(id, countryDTO);
+        CountrySearchDTO dto = countryService.update(id, countryDTO);
 
         return ResponseEntity.ok()
                 .body(new ResponseSuccessDTO<>(HttpStatus.OK.value(), dto));

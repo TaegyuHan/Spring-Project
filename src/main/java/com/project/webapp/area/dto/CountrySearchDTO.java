@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class CountryIdNameDTO extends CountryNameDTO {
+public class CountrySearchDTO extends CountrySaveDTO {
     @NotNull
     private Integer countryId;
 }

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Getter
 @Setter
-public class CountryNameDTO extends CountryDTO {
+public class CountrySaveDTO extends CountryDTO {
     @Size(max = 50)
     @NotBlank(message = "country name cannot be blank")
     private String country;

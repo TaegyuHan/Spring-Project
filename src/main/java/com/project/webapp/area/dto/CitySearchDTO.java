@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CityIdNameCountryIdDTO extends CityNameCountryIdDTO {
+public class CitySearchDTO extends CitySaveDTO {
     @NotNull
     private Integer cityId;
 }
