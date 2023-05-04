@@ -23,7 +23,7 @@ public class AddressController {
     private AddressService addressService;
 
     @PostMapping("/address")
-    public ResponseEntity<ResponseDTO<AddressSearchDTO>> createCountry(
+    public ResponseEntity<ResponseDTO<AddressSearchDTO>> createAddress(
             @Valid @RequestBody AddressSaveDTO addressSaveDTO
     ) {
         AddressSearchDTO dto = addressService.create(addressSaveDTO);
@@ -33,7 +33,7 @@ public class AddressController {
     }
 
     @GetMapping("/address/{id}")
-    public ResponseEntity<ResponseDTO<AddressSearchDTO>> readCountriesAll(
+    public ResponseEntity<ResponseDTO<AddressSearchDTO>> readAddress(
             @PathVariable @NotBlank Integer id
     ) {
         AddressSearchDTO dto = addressService.findByid(id);
@@ -43,7 +43,7 @@ public class AddressController {
     }
 
     @PutMapping("/address/{id}")
-    public ResponseEntity<ResponseDTO<AddressSearchDTO>> updateCountry(
+    public ResponseEntity<ResponseDTO<AddressSearchDTO>> updateAddress(
             @PathVariable @NotBlank Integer id,
             @Valid @RequestBody AddressSaveDTO addressSaveDTO
     ) {
@@ -54,7 +54,7 @@ public class AddressController {
     }
 
     @DeleteMapping("/address/{id}")
-    public ResponseEntity<ResponseDTO<Integer>> deleteCountry(
+    public ResponseEntity<ResponseDTO<Integer>> deleteAddress(
             @PathVariable @NotBlank Integer id
     ) {
         addressService.delete(id);
