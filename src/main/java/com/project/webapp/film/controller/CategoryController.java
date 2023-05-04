@@ -21,7 +21,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping("/category")
-    public ResponseEntity<ResponseDTO<CategorySearchDTO>> createCountry(
+    public ResponseEntity<ResponseDTO<CategorySearchDTO>> createCategory(
             @Valid @RequestBody CategorySaveDTO CategorySaveDTO
     ) {
         CategorySearchDTO dto = categoryService.create(CategorySaveDTO);
@@ -31,7 +31,7 @@ public class CategoryController {
     }
 
     @GetMapping("/category/{id}")
-    public ResponseEntity<ResponseDTO<CategorySearchDTO>> readCountriesAll(
+    public ResponseEntity<ResponseDTO<CategorySearchDTO>> readCategory(
             @PathVariable @NotBlank Integer id
     ) {
         CategorySearchDTO dto = categoryService.findByid(id);
@@ -41,7 +41,7 @@ public class CategoryController {
     }
 
     @PutMapping("/category/{id}")
-    public ResponseEntity<ResponseDTO<CategorySearchDTO>> updateCountry(
+    public ResponseEntity<ResponseDTO<CategorySearchDTO>> updateCategory(
             @PathVariable @NotBlank Integer id,
             @Valid @RequestBody CategorySaveDTO CategorySaveDTO
     ) {
@@ -52,7 +52,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/category/{id}")
-    public ResponseEntity<ResponseDTO<Integer>> deleteCountry(
+    public ResponseEntity<ResponseDTO<Integer>> deleteCategory(
             @PathVariable @NotBlank Integer id
     ) {
         categoryService.delete(id);
