@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @Transactional
 public class LanguageService {
@@ -29,28 +27,18 @@ public class LanguageService {
     }
 
     @Transactional(readOnly = true)
-    public LanguageSearchDTO findByid(Integer id) {
-
-        Optional<Language> category = languageRepository.findById(id);
-        if (category.isEmpty()) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
-
-        return modelMapper.map(category.get(), LanguageSearchDTO.class);
+    public LanguageSearchDTO findById(Integer id) {
+        return languageRepository.findById(id)
+                .map(language -> modelMapper.map(language, LanguageSearchDTO.class))
+                .orElseThrow(() -> new NonExistentDataException("Data does not exist.", id));
     }
 
     public LanguageSearchDTO update(Integer id, LanguageSaveDTO languageSaveDTO) {
-        Optional<Language> check = languageRepository.findById(id);
-        if (check.isEmpty()) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
-
-        Language updateEntity = check.get();
-        updateEntity.setName(languageSaveDTO.getName());
-        Language savedEntity = languageRepository.save(updateEntity);
+        Language language = languageRepository.getReferenceById(id);
+        language.setName(languageSaveDTO.getName());
+        Language savedEntity = languageRepository.save(language);
         return modelMapper.map(savedEntity, LanguageSearchDTO.class);
     }
-
     public void delete(Integer id) {
         languageRepository.deleteById(id);
     }

@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @Transactional
 public class ActorService {
@@ -23,38 +21,29 @@ public class ActorService {
     private ModelMapper modelMapper;
 
     public ActorSearchDTO create(ActorSaveDTO actorSaveDTO) {
-
         Actor newEntity = modelMapper.map(actorSaveDTO, Actor.class);
         Actor savedEntity = actorRepository.save(newEntity);
         return modelMapper.map(savedEntity, ActorSearchDTO.class);
     }
 
     @Transactional(readOnly = true)
-    public ActorSearchDTO findByid(Integer id) {
-
-        Optional<Actor> actor = actorRepository.findById(id);
-        if (actor.isEmpty()) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
-
-        return modelMapper.map(actor, ActorSearchDTO.class);
+    public ActorSearchDTO findById(Integer id) {
+        return actorRepository.findById(id)
+                .map(actor -> modelMapper.map(actor, ActorSearchDTO.class))
+                .orElseThrow(() -> new NonExistentDataException("Data does not exist.", id));
     }
+
 
     public ActorSearchDTO update(Integer id, ActorSaveDTO actorSaveDTO) {
 
-        Optional<Actor> actor = actorRepository.findById(id);
-        if (actor.isEmpty()) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
+        Actor actor = actorRepository.findById(id)
+                .orElseThrow(() -> new NonExistentDataException("Data does not exist.", id));
 
-        Actor updateEntity = actor.get();
-        updateEntity.setFirstName(actorSaveDTO.getFirstName());
-        updateEntity.setLastName(actorSaveDTO.getLastName());
-        Actor savedEntity = actorRepository.save(updateEntity);
+        actor.setFirstName(actorSaveDTO.getFirstName());
+        actor.setLastName(actorSaveDTO.getLastName());
+        Actor savedEntity = actorRepository.save(actor);
         return modelMapper.map(savedEntity, ActorSearchDTO.class);
     }
 
-    public void delete(Integer id) {
-        actorRepository.deleteById(id);
-    }
+    public void delete(Integer id) { actorRepository.deleteById(id); }
 }

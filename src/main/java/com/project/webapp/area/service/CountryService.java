@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -38,19 +37,18 @@ public class CountryService {
         List<Country> entityList = countryRepository.findAll();
 
         Type listType = new TypeToken<List<CountrySearchDTO>>() {}.getType();
+
         return modelMapper.map(entityList, listType);
     }
 
     public CountrySearchDTO update(Integer id, CountrySaveDTO countryDTO) {
 
-        Optional<Country> country = countryRepository.findById(id);
-        if (country.isEmpty()) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
+        Country country = countryRepository.findById(id)
+                .orElseThrow(() -> new NonExistentDataException("Data does not exist.", id));
 
-        Country updateEntity = country.get();
-        updateEntity.setCountry(countryDTO.getCountry());
-        Country savedEntity = countryRepository.save(updateEntity);
+        country.setCountry(countryDTO.getCountry());
+        Country savedEntity = countryRepository.save(country);
+
         return modelMapper.map(savedEntity, CountrySearchDTO.class);
     }
 

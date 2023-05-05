@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 
 @Service
 @Transactional
@@ -30,25 +28,19 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public CategorySearchDTO findByid(Integer id) {
-
-        Optional<Category> category = categoryRepository.findById(id);
-        if (category.isEmpty()) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
-
-        return modelMapper.map(category, CategorySearchDTO.class);
+    public CategorySearchDTO findById(Integer id) {
+        return categoryRepository.findById(id)
+                .map(category -> modelMapper.map(category, CategorySearchDTO.class))
+                .orElseThrow(() -> new NonExistentDataException("Data does not exist.", id));
     }
 
     public CategorySearchDTO update(Integer id, CategorySaveDTO categorySaveDTO) {
-        Optional<Category> category = categoryRepository.findById(id);
-        if (category.isEmpty()) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
-        Category updateEntity = category.get();
 
-        updateEntity.setName(categorySaveDTO.getName());
-        Category savedEntity = categoryRepository.save(updateEntity);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new NonExistentDataException("Data does not exist.", id));
+
+        category.setName(categorySaveDTO.getName());
+        Category savedEntity = categoryRepository.save(category);
         return modelMapper.map(savedEntity, CategorySearchDTO.class);
     }
 
