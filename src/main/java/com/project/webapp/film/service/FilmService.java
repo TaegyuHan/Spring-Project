@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,9 @@ public class FilmService {
 
     @Autowired
     private FilmCategoryRepository filmCategoryRepository;
+
+    @Autowired
+    private FilmTextRepository filmTextRepository;
 
     @Autowired
     private FilmActorRepository filmActorRepository;
@@ -59,6 +63,14 @@ public class FilmService {
             newEntity.setOriginalLanguage(originalLanguage.get());
         }
         Film savedEntity = filmRepository.save(newEntity);
+
+        FilmText filmText = FilmText.builder()
+                .filmId(savedEntity.getFilmId())
+                .title(savedEntity.getTitle())
+                .description(savedEntity.getDescription())
+                .build();
+
+        filmTextRepository.save(filmText);
 
         List<Integer> categoryIds = filmSaveDTO.getCategoryIds();
         List<FilmCategory> filmCategories = new ArrayList<>(categoryIds.size());
@@ -145,6 +157,16 @@ public class FilmService {
 
         Film savedEntity = filmRepository.save(updateEntity);
 
+        Optional<FilmText> filmText = filmTextRepository.findByFilmId(id);
+        if (filmText.isEmpty()) {
+            throw new NonExistentDataException("Data does not exist. filmText", id);
+        }
+        FilmText updateFilmText = filmText.get();
+
+        updateFilmText.setTitle(savedEntity.getTitle());
+        updateFilmText.setDescription(savedEntity.getDescription());
+        filmTextRepository.save(updateFilmText);
+
         filmCategoryRepository.deleteById_FilmId(id);
         filmActorRepository.deleteById_FilmId(id);
 
@@ -183,6 +205,7 @@ public class FilmService {
     }
 
     public void delete(Integer id) {
+        filmTextRepository.deleteById(id);
         filmCategoryRepository.deleteById_FilmId(id);
         filmActorRepository.deleteById_FilmId(id);
         filmRepository.deleteById(id);
