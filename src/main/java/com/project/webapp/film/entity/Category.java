@@ -29,4 +29,8 @@ public class Category {
     @Column(name = "last_update", nullable = false,
             columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp lastUpdate;
+
+    public Category(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
 }

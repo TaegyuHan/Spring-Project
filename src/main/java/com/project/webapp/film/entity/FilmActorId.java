@@ -15,11 +15,11 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class FilmActorId implements Serializable {
 
-    @Column(name = "actor_id", nullable = false,
-            columnDefinition = "SMALLINT UNSIGNED")
-    private Integer actorId;
-
     @Column(name = "film_id", nullable = false,
             columnDefinition = "SMALLINT UNSIGNED")
     private Integer filmId;
+
+    @Column(name = "actor_id", nullable = false,
+            columnDefinition = "SMALLINT UNSIGNED")
+    private Integer actorId;
 }
