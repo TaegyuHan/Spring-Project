@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 
     // 존재하는 데이터
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<ErrorMessageDTO> sQLIntegrityConstraintViolationException (SQLIntegrityConstraintViolationException ex, WebRequest request) {
+    public ResponseEntity<ErrorMessageDTO> sqlIntegrityConstraintViolationException (SQLIntegrityConstraintViolationException ex, WebRequest request) {
 
         HttpStatus httpStatus = HttpStatus.CONFLICT;
 
