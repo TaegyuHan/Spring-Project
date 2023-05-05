@@ -8,5 +8,8 @@ import java.util.Optional;
 
 @Repository
 public interface LanguageRepository extends JpaRepository<Language, Integer> {
+
     Optional<Language> findByName(String name);
+
+    boolean existsByName(String name);
 }

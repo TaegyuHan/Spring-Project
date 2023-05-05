@@ -9,11 +9,13 @@ import com.project.webapp.film.repository.CategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 
 @Service
+@Transactional
 public class CategoryService {
 
     @Autowired
@@ -23,8 +25,8 @@ public class CategoryService {
     private ModelMapper modelMapper;
 
     public CategorySearchDTO create(CategorySaveDTO categorySaveDTO) {
-        // 기존에 있는지 확인
-        if (categoryRepository.findByName(categorySaveDTO.getName()).isPresent()) {
+
+        if (categoryRepository.existsByName(categorySaveDTO.getName())) {
             throw new AlreadyExistsDataException("The name of the category already exists.", categorySaveDTO);
         }
 
@@ -33,8 +35,9 @@ public class CategoryService {
         return modelMapper.map(savedEntity, CategorySearchDTO.class);
     }
 
+    @Transactional(readOnly = true)
     public CategorySearchDTO findByid(Integer id) {
-        // 존재 유무 확인
+
         Optional<Category> category = categoryRepository.findById(id);
         if (category.isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);
@@ -44,27 +47,24 @@ public class CategoryService {
     }
 
     public CategorySearchDTO update(Integer id, CategorySaveDTO categorySaveDTO) {
-        Optional<Category> check;
-        // 업데이트 데이터 존재 확인
-        check = categoryRepository.findByName(categorySaveDTO.getName());
-        if (check.isPresent()) {
-            throw new AlreadyExistsDataException("Data already exists.", categorySaveDTO);
+
+        if (categoryRepository.existsByName(categorySaveDTO.getName())) {
+            throw new AlreadyExistsDataException("The name of the category already exists.", categorySaveDTO);
         }
 
-        // 데이터 존재 하는지 확인
-        check = categoryRepository.findById(id);
-        if (check.isEmpty()) {
+        Optional<Category> category = categoryRepository.findById(id);
+        if (category.isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);
         }
+        Category updateEntity = category.get();
 
-        Category updateEntity = check.get();
         updateEntity.setName(categorySaveDTO.getName());
         Category savedEntity = categoryRepository.save(updateEntity);
         return modelMapper.map(savedEntity, CategorySearchDTO.class);
     }
 
     public void delete(Integer id) {
-        if (categoryRepository.findById(id).isEmpty()) {
+        if (!categoryRepository.existsById(id)) {
             throw new NonExistentDataException("Data does not exist.", id);
         }
         categoryRepository.deleteById(id);

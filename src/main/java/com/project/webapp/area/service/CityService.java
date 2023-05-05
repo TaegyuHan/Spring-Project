@@ -13,12 +13,14 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class CityService {
 
     @Autowired
@@ -32,13 +34,10 @@ public class CityService {
 
     public CitySearchDTO create(CitySaveDTO citySaveDTO) {
 
-        // 중복 데이터 검사
-        if (cityRepository.findByCountry_CountryIdAndCity(citySaveDTO.getCountryId(), citySaveDTO.getCity())
-                .isPresent()) {
+        if (cityRepository.existsByCountry_CountryIdAndCity(citySaveDTO.getCountryId(), citySaveDTO.getCity())) {
             throw new AlreadyExistsDataException("The name of the city already exists.", citySaveDTO);
         }
 
-        // 나라 존재 확인
         Optional<Country> country = countryRepository.findById(citySaveDTO.getCountryId());
         if (country.isEmpty()) {
             throw new NonExistentDataException("CountryId not found", citySaveDTO);
@@ -56,10 +55,10 @@ public class CityService {
         return modelMapper.map(savedEntity, CitySearchDTO.class);
     }
 
+    @Transactional(readOnly = true)
     public List<CitySearchByCountryIdDTO> findByCountryId(Integer countryId) {
 
-        // country 존재 확인
-        if (countryRepository.findById(countryId).isEmpty()) {
+        if (!countryRepository.existsById(countryId)) {
             throw new NonExistentDataException("countryId does not exist.");
         }
 
@@ -75,26 +74,21 @@ public class CityService {
         return modelMapper.map(entityList, listType);
     }
 
-    public CitySearchDTO update(Integer id, CitySaveDTO cityIdNameCountryIdDTO) {
-        Optional<City> check;
+    public CitySearchDTO update(Integer id, CitySaveDTO citySaveDTO) {
 
-        // city 존재하지 않음
-        check = cityRepository.findById(id);
-        if (check.isEmpty()) {
+        Optional<City> city = cityRepository.findById(id);
+        if (city.isEmpty()) {
             throw new NonExistentDataException("city does not exist.");
         }
-        City updateEntity = check.get();
+        City updateEntity = city.get();
 
-        // 이미 존재합니다.
-        check = cityRepository.findByCountry_CountryIdAndCity(
-                cityIdNameCountryIdDTO.getCountryId(), cityIdNameCountryIdDTO.getCity());
-        if (check.isPresent()) {
-            throw new AlreadyExistsDataException("Data already exists.", cityIdNameCountryIdDTO);
+        if (cityRepository.existsByCountry_CountryIdAndCity(citySaveDTO.getCountryId(), citySaveDTO.getCity())) {
+            throw new AlreadyExistsDataException("The name of the city already exists.", citySaveDTO);
         }
-        updateEntity.setCity(cityIdNameCountryIdDTO.getCity());
-        updateEntity.setCityId(cityIdNameCountryIdDTO.getCountryId());
-        City savedEntity = cityRepository.save(updateEntity);
 
+        updateEntity.setCity(citySaveDTO.getCity());
+        updateEntity.setCityId(citySaveDTO.getCountryId());
+        City savedEntity = cityRepository.save(updateEntity);
 
         modelMapper.typeMap(City.class, CitySaveDTO.class).addMappings(mapper -> {
             mapper.map(City::getCityId, CitySaveDTO::setCity);
@@ -106,7 +100,7 @@ public class CityService {
     }
 
     public void delete(Integer id) {
-        if (cityRepository.findById(id).isEmpty()) {
+        if (!cityRepository.existsById(id)) {
             throw new NonExistentDataException("CityId not found", id);
         }
         cityRepository.deleteById(id);

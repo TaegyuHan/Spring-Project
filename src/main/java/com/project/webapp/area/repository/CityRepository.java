@@ -14,5 +14,5 @@ public interface CityRepository  extends JpaRepository<City, Integer> {
 
     List<City> findByCountry_CountryId(Integer countryId);
 
-    Optional<City> findByCountry_CountryIdAndCity(Integer countryId, String city);
+    boolean existsByCountry_CountryIdAndCity(Integer countryId, String city);
 }

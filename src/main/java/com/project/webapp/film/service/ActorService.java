@@ -8,10 +8,12 @@ import com.project.webapp.film.repository.ActorRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class ActorService {
 
     @Autowired
@@ -21,13 +23,15 @@ public class ActorService {
     private ModelMapper modelMapper;
 
     public ActorSearchDTO create(ActorSaveDTO actorSaveDTO) {
+
         Actor newEntity = modelMapper.map(actorSaveDTO, Actor.class);
         Actor savedEntity = actorRepository.save(newEntity);
         return modelMapper.map(savedEntity, ActorSearchDTO.class);
     }
 
+    @Transactional(readOnly = true)
     public ActorSearchDTO findByid(Integer id) {
-        // 존재 유무 확인
+
         Optional<Actor> actor = actorRepository.findById(id);
         if (actor.isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);
@@ -37,12 +41,13 @@ public class ActorService {
     }
 
     public ActorSearchDTO update(Integer id, ActorSaveDTO actorSaveDTO) {
-        Optional<Actor> check = actorRepository.findById(id);
-        if (check.isEmpty()) {
+
+        Optional<Actor> actor = actorRepository.findById(id);
+        if (actor.isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);
         }
 
-        Actor updateEntity = check.get();
+        Actor updateEntity = actor.get();
         updateEntity.setFirstName(actorSaveDTO.getFirstName());
         updateEntity.setLastName(actorSaveDTO.getLastName());
         Actor savedEntity = actorRepository.save(updateEntity);
@@ -50,7 +55,7 @@ public class ActorService {
     }
 
     public void delete(Integer id) {
-        if (actorRepository.findById(id).isEmpty()) {
+        if (!actorRepository.existsById(id)) {
             throw new NonExistentDataException("Data does not exist.", id);
         }
         actorRepository.deleteById(id);

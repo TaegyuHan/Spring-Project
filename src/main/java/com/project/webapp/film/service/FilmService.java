@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
+
 @Service
 @Transactional
 public class FilmService {
@@ -28,19 +31,24 @@ public class FilmService {
 
     public FilmSearchDTO create(FilmSaveDTO filmSaveDTO) {
 
-        Language language = languageRepository.findById(filmSaveDTO.getLanguageId())
-                .orElseThrow(() -> new NonExistentDataException("Data does not exist. languageId", filmSaveDTO));
+        Optional<Language> language = languageRepository.findById(filmSaveDTO.getLanguageId());
+        if (language.isEmpty()) {
+            throw new NonExistentDataException("Data does not exist. languageId", filmSaveDTO);
+        }
 
-        modelMapper.typeMap(FilmSaveDTO.class, Film.class)
-                .addMappings(mapper -> mapper.skip(Film::setFilmId));
+        modelMapper.typeMap(FilmSaveDTO.class, Film.class).addMappings(mapper -> {
+                    mapper.skip(Film::setFilmId);
+        });
 
         Film newEntity = modelMapper.map(filmSaveDTO, Film.class);
-        newEntity.setLanguage(language);
+        newEntity.setLanguage(language.get());
 
         if (filmSaveDTO.getOriginalLanguageId() != null) {
-            Language originalLanguage = languageRepository.findById(filmSaveDTO.getOriginalLanguageId())
-                    .orElseThrow(() -> new NonExistentDataException("Data does not exist. originalLanguageId", filmSaveDTO));
-            newEntity.setOriginalLanguage(originalLanguage);
+            Optional<Language> originalLanguage = languageRepository.findById(filmSaveDTO.getLanguageId());
+            if (originalLanguage.isEmpty()) {
+                throw new NonExistentDataException("Data does not exist. originalLanguageId", filmSaveDTO);
+            }
+            newEntity.setOriginalLanguage(originalLanguage.get());
         }
 
         Film savedEntity = filmRepository.save(newEntity);
@@ -50,39 +58,49 @@ public class FilmService {
     @Transactional(readOnly = true)
     public FilmSearchDTO findById(Integer id) {
 
-        Film film = filmRepository.findById(id)
-                .orElseThrow(() -> new NonExistentDataException("Data does not exist.", id));
+        Optional<Film> film = filmRepository.findById(id);
+        if (film.isEmpty()) {
+            throw new NonExistentDataException("Data does not exist.", id);
+        }
 
         return modelMapper.map(film, FilmSearchDTO.class);
     }
 
     public FilmSearchDTO update(Integer id, FilmSaveDTO filmSaveDTO) {
 
-        Film updateEntity = filmRepository.findById(id)
-                .orElseThrow(() -> new NonExistentDataException("Data does not exist.", id));
+        Optional<Film> film = filmRepository.findById(id);
+        if (film.isEmpty()) {
+            throw new NonExistentDataException("Data does not exist.", id);
+        }
+        Film updateEntity = film.get();
 
-        Language language = languageRepository.findById(filmSaveDTO.getLanguageId())
-                .orElseThrow(() -> new NonExistentDataException("Data does not exist. languageId", filmSaveDTO));
-        updateEntity.setLanguage(language);
+        Optional<Language> language = languageRepository.findById(filmSaveDTO.getLanguageId());
+        if (language.isEmpty()) {
+            throw new NonExistentDataException("Data does not exist. languageId", filmSaveDTO);
+        }
+        updateEntity.setLanguage(language.get());
 
         if (filmSaveDTO.getOriginalLanguageId() != null) {
-            Language originalLanguage = languageRepository.findById(filmSaveDTO.getOriginalLanguageId())
-                    .orElseThrow(() -> new NonExistentDataException("Data does not exist. originalLanguageId", filmSaveDTO));
-            updateEntity.setOriginalLanguage(originalLanguage);
+            Optional<Language> originalLanguage = languageRepository.findById(filmSaveDTO.getLanguageId());
+            if (originalLanguage.isEmpty()) {
+                throw new NonExistentDataException("Data does not exist. originalLanguageId", filmSaveDTO);
+            }
+            updateEntity.setOriginalLanguage(originalLanguage.get());
         } else {
             updateEntity.setOriginalLanguage(null);
         }
 
-        BeanUtils.copyProperties(filmSaveDTO, updateEntity, "languageId", "originalLanguageId", "specialFeatures");
+        BeanUtils.copyProperties(filmSaveDTO, updateEntity,
+                "languageId", "originalLanguageId", "specialFeatures");
 
         Film savedEntity = filmRepository.save(updateEntity);
         return modelMapper.map(savedEntity, FilmSearchDTO.class);
     }
 
     public void delete(Integer id) {
-        Film film = filmRepository.findById(id)
-                .orElseThrow(() -> new NonExistentDataException("Data does not exist.", id));
-
-        filmRepository.delete(film);
+        if (!filmRepository.existsById(id)) {
+            throw new NonExistentDataException("FilmId not found", id);
+        }
+        filmRepository.deleteById(id);
     }
 }

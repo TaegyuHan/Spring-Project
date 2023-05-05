@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 
 @Service
+@Transactional
 public class CountryService {
 
     @Autowired
@@ -28,7 +30,7 @@ public class CountryService {
 
     public CountrySearchDTO create(CountrySaveDTO countryDTO) {
 
-        if (countryRepository.findByCountry(countryDTO.getCountry()).isPresent()) { // 중복 데이터 검사
+        if (countryRepository.existsByCountry(countryDTO.getCountry())) { // 중복 데이터 검사
             throw new AlreadyExistsDataException("The name of the country already exists.", countryDTO);
         }
 
@@ -37,6 +39,7 @@ public class CountryService {
         return modelMapper.map(savedEntity, CountrySearchDTO.class);
     }
 
+    @Transactional(readOnly = true)
     public List<CountrySearchDTO> readAll() {
         List<Country> entityList = countryRepository.findAll();
 
@@ -45,28 +48,24 @@ public class CountryService {
     }
 
     public CountrySearchDTO update(Integer id, CountrySaveDTO countryDTO) {
-        Optional<Country> check;
 
-        // 업데이트 데이터 존재 확인
-        check = countryRepository.findByCountry(countryDTO.getCountry());
-        if (check.isPresent()) {
-            throw new AlreadyExistsDataException("Data already exists.", countryDTO);
+        if (countryRepository.existsByCountry(countryDTO.getCountry())) { // 중복 데이터 검사
+            throw new AlreadyExistsDataException("The name of the country already exists.", countryDTO);
         }
 
-        // 데이터 존재 하는지 확인
-        check = countryRepository.findById(id);
-        if (check.isEmpty()) {
+        Optional<Country> country = countryRepository.findById(id);
+        if (country.isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);
         }
 
-        Country updateEntity = check.get();
+        Country updateEntity = country.get();
         updateEntity.setCountry(countryDTO.getCountry());
         Country savedEntity = countryRepository.save(updateEntity);
         return modelMapper.map(savedEntity, CountrySearchDTO.class);
     }
 
     public void delete(Integer id) {
-        if (countryRepository.findById(id).isEmpty()) {
+        if (!countryRepository.existsById(id)) {
             throw new NonExistentDataException("Data does not exist.", id);
         }
         countryRepository.deleteById(id);

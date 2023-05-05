@@ -12,5 +12,8 @@ import java.util.Optional;
 public interface  CountryRepository extends JpaRepository<Country, Integer> {
 
     Optional<Country> findByCountry(String country);
+    
     List<Country> findAll();
+
+    boolean existsByCountry(String country);
 }

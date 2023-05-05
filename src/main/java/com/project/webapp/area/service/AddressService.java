@@ -8,12 +8,15 @@ import com.project.webapp.area.repository.AddressRepository;
 import com.project.webapp.area.repository.CityRepository;
 import com.project.webapp.config.exception.NonExistentDataException;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class AddressService {
 
     @Autowired
@@ -26,20 +29,14 @@ public class AddressService {
     private ModelMapper modelMapper;
 
     public AddressSearchDTO create(AddressSaveDTO addressSaveDTO) {
-        // 도시가 존재하는지 확인
+
         Optional<City> city = cityRepository.findById(addressSaveDTO.getCityId());
         if (city.isEmpty()) {
-            throw new NonExistentDataException("CityId not found", addressSaveDTO);
+            throw new NonExistentDataException("Data does not exist. CityId", addressSaveDTO);
         }
 
-        modelMapper.typeMap(AddressSaveDTO.class, Address.class).addMappings(mapper -> {
-            mapper.skip(Address::setAddressId);
-            mapper.map(AddressSaveDTO::getAddress, Address::setAddress);
-            mapper.map(AddressSaveDTO::getAddress2, Address::setAddress2);
-            mapper.map(AddressSaveDTO::getDistrict, Address::setDistrict);
-            mapper.map(AddressSaveDTO::getPostalCode, Address::setPostalCode);
-            mapper.map(AddressSaveDTO::getPhone, Address::setPhone);
-        });
+        modelMapper.typeMap(AddressSaveDTO.class, Address.class)
+                .addMappings(mapper -> mapper.skip(Address::setAddressId));
 
         Address newEntity = modelMapper.map(addressSaveDTO, Address.class);
         newEntity.setCity(city.get());
@@ -48,8 +45,9 @@ public class AddressService {
         return modelMapper.map(savedEntity, AddressSearchDTO.class);
     }
 
-    public AddressSearchDTO findByid(Integer id) {
-        // 주소가 존재하는지 확인
+    @Transactional(readOnly = true)
+    public AddressSearchDTO findById(Integer id) {
+
         Optional<Address> address = addressRepository.findById(id);
         if (address.isEmpty()) {
             throw new NonExistentDataException("AddressId not found", id);
@@ -59,33 +57,31 @@ public class AddressService {
     }
 
     public AddressSearchDTO update(Integer id, AddressSaveDTO addressSaveDTO) {
-        // 주소가 기존에 있는지 확인
+
         Optional<Address> address = addressRepository.findById(id);
         if (address.isEmpty()) {
             throw new NonExistentDataException("AddressId not found", id);
         }
-
-        // 수정하려는 도시가 있는지 확인
-        Optional<City> city = cityRepository.findById(addressSaveDTO.getCityId());
-        if (city.isEmpty()) {
-            throw new NonExistentDataException("CityId not found", addressSaveDTO);
-        }
         Address updateEntity = address.get();
 
-        updateEntity.setAddress(addressSaveDTO.getAddress());
-        updateEntity.setAddress2(addressSaveDTO.getAddress2());
-        updateEntity.setDistrict(addressSaveDTO.getDistrict());
+        Optional<City> city = cityRepository.findById(addressSaveDTO.getCityId());
+        if (city.isEmpty()) {
+            throw new NonExistentDataException("Data does not exist. CityId", addressSaveDTO);
+        }
+
         updateEntity.setCity(city.get());
-        updateEntity.setPostalCode(addressSaveDTO.getPostalCode());
-        updateEntity.setAddress2(addressSaveDTO.getPhone());
+
+        BeanUtils.copyProperties(addressSaveDTO, updateEntity,
+                "addressId", "city");
+
         Address savedEntity = addressRepository.save(updateEntity);
 
         return  modelMapper.map(savedEntity, AddressSearchDTO.class);
     }
 
     public void delete(Integer id) {
-        if (addressRepository.findById(id).isEmpty()) {
-            throw new NonExistentDataException("AddressId not found", id);
+        if (!addressRepository.existsById(id)) {
+            throw new NonExistentDataException("Address not found.", id);
         }
         addressRepository.deleteById(id);
     }

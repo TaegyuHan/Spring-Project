@@ -36,7 +36,7 @@ public class AddressController {
     public ResponseEntity<ResponseDTO<AddressSearchDTO>> readAddress(
             @PathVariable @NotBlank Integer id
     ) {
-        AddressSearchDTO dto = addressService.findByid(id);
+        AddressSearchDTO dto = addressService.findById(id);
 
         return ResponseEntity.ok()
                 .body(new ResponseSuccessDTO<>(HttpStatus.OK.value(), dto));

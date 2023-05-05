@@ -9,10 +9,12 @@ import com.project.webapp.film.repository.LanguageRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class LanguageService {
 
     @Autowired
@@ -22,7 +24,8 @@ public class LanguageService {
     private ModelMapper modelMapper;
 
     public LanguageSearchDTO create(LanguageSaveDTO languageSaveDTO) {
-        if (languageRepository.findByName(languageSaveDTO.getName()).isPresent()) {
+
+        if (languageRepository.existsByName(languageSaveDTO.getName())) {
             throw new AlreadyExistsDataException("The name of the language already exists.", languageSaveDTO);
         }
 
@@ -31,8 +34,9 @@ public class LanguageService {
         return modelMapper.map(savedEntity, LanguageSearchDTO.class);
     }
 
+    @Transactional(readOnly = true)
     public LanguageSearchDTO findByid(Integer id) {
-        // 존재 유무 확인
+
         Optional<Language> category = languageRepository.findById(id);
         if (category.isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);
@@ -42,15 +46,12 @@ public class LanguageService {
     }
 
     public LanguageSearchDTO update(Integer id, LanguageSaveDTO languageSaveDTO) {
-        Optional<Language> check;
-        // 업데이트 데이터 존재 확인
-        check = languageRepository.findByName(languageSaveDTO.getName());
-        if (check.isPresent()) {
+
+        if (languageRepository.existsByName(languageSaveDTO.getName())) {
             throw new AlreadyExistsDataException("Data already exists.", languageSaveDTO);
         }
 
-        // 데이터 존재 하는지 확인
-        check = languageRepository.findById(id);
+        Optional<Language> check = languageRepository.findById(id);
         if (check.isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);
         }
@@ -62,7 +63,7 @@ public class LanguageService {
     }
 
     public void delete(Integer id) {
-        if (languageRepository.findById(id).isEmpty()) {
+        if (!languageRepository.existsById(id)) {
             throw new NonExistentDataException("Data does not exist.", id);
         }
         languageRepository.deleteById(id);
