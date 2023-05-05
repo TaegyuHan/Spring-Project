@@ -17,7 +17,7 @@ import java.util.Optional;
 public class ActorService {
 
     @Autowired
-    ActorRepository actorRepository;
+    private ActorRepository actorRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -55,9 +55,6 @@ public class ActorService {
     }
 
     public void delete(Integer id) {
-        if (!actorRepository.existsById(id)) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
         actorRepository.deleteById(id);
     }
 }

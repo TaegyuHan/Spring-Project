@@ -52,9 +52,6 @@ public class LanguageService {
     }
 
     public void delete(Integer id) {
-        if (!languageRepository.existsById(id)) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
         languageRepository.deleteById(id);
     }
 }

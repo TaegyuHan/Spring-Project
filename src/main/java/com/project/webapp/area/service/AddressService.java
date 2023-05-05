@@ -80,9 +80,6 @@ public class AddressService {
     }
 
     public void delete(Integer id) {
-        if (!addressRepository.existsById(id)) {
-            throw new NonExistentDataException("Address not found.", id);
-        }
         addressRepository.deleteById(id);
     }
 }

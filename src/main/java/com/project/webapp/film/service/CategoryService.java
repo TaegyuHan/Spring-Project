@@ -53,9 +53,6 @@ public class CategoryService {
     }
 
     public void delete(Integer id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
         categoryRepository.deleteById(id);
     }
 }

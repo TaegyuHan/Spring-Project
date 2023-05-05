@@ -100,9 +100,6 @@ public class CityService {
     }
 
     public void delete(Integer id) {
-        if (!cityRepository.existsById(id)) {
-            throw new NonExistentDataException("CityId not found", id);
-        }
         cityRepository.deleteById(id);
     }
 }
