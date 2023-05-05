@@ -1,6 +1,5 @@
 package com.project.webapp.film.service;
 
-import com.project.webapp.config.exception.AlreadyExistsDataException;
 import com.project.webapp.config.exception.NonExistentDataException;
 import com.project.webapp.film.dto.LanguageSearchDTO;
 import com.project.webapp.film.dto.LanguageSaveDTO;
@@ -18,17 +17,12 @@ import java.util.Optional;
 public class LanguageService {
 
     @Autowired
-    LanguageRepository languageRepository;
+    private LanguageRepository languageRepository;
 
     @Autowired
     private ModelMapper modelMapper;
 
     public LanguageSearchDTO create(LanguageSaveDTO languageSaveDTO) {
-
-        if (languageRepository.existsByName(languageSaveDTO.getName())) {
-            throw new AlreadyExistsDataException("The name of the language already exists.", languageSaveDTO);
-        }
-
         Language newEntity = modelMapper.map(languageSaveDTO, Language.class);
         Language savedEntity = languageRepository.save(newEntity);
         return modelMapper.map(savedEntity, LanguageSearchDTO.class);
@@ -46,11 +40,6 @@ public class LanguageService {
     }
 
     public LanguageSearchDTO update(Integer id, LanguageSaveDTO languageSaveDTO) {
-
-        if (languageRepository.existsByName(languageSaveDTO.getName())) {
-            throw new AlreadyExistsDataException("Data already exists.", languageSaveDTO);
-        }
-
         Optional<Language> check = languageRepository.findById(id);
         if (check.isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);

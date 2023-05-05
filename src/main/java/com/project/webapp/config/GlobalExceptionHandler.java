@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.net.ConnectException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +55,21 @@ public class GlobalExceptionHandler {
     }
 
     // 존재하는 데이터
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<ErrorMessageDTO> sQLIntegrityConstraintViolationException (SQLIntegrityConstraintViolationException ex, WebRequest request) {
+
+        HttpStatus httpStatus = HttpStatus.CONFLICT;
+
+        ErrorMessageDTO dto = ErrorMessageDTO.builder()
+                .statusCode(httpStatus.value())
+                .message(ex.getMessage())
+                .description(request.getDescription(false))
+                .data(ex.getErrorCode())
+                .timestamp(Instant.now())
+                .build();
+        return new ResponseEntity<>(dto, httpStatus);
+    }
+
     @ExceptionHandler(AlreadyExistsDataException.class)
     public ResponseEntity<ErrorMessageDTO> alreadyExistsDataException(AlreadyExistsDataException ex, WebRequest request) {
 

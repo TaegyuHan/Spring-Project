@@ -5,7 +5,6 @@ import com.project.webapp.area.dto.CountrySearchDTO;
 import com.project.webapp.area.dto.CountrySaveDTO;
 import com.project.webapp.area.entity.Country;
 import com.project.webapp.area.repository.CountryRepository;
-import com.project.webapp.config.exception.AlreadyExistsDataException;
 import com.project.webapp.config.exception.NonExistentDataException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -29,11 +28,6 @@ public class CountryService {
     private ModelMapper modelMapper;
 
     public CountrySearchDTO create(CountrySaveDTO countryDTO) {
-
-        if (countryRepository.existsByCountry(countryDTO.getCountry())) { // 중복 데이터 검사
-            throw new AlreadyExistsDataException("The name of the country already exists.", countryDTO);
-        }
-
         Country newEntity = modelMapper.map(countryDTO, Country.class);
         Country savedEntity = countryRepository.save(newEntity);
         return modelMapper.map(savedEntity, CountrySearchDTO.class);
@@ -49,10 +43,6 @@ public class CountryService {
 
     public CountrySearchDTO update(Integer id, CountrySaveDTO countryDTO) {
 
-        if (countryRepository.existsByCountry(countryDTO.getCountry())) { // 중복 데이터 검사
-            throw new AlreadyExistsDataException("The name of the country already exists.", countryDTO);
-        }
-
         Optional<Country> country = countryRepository.findById(id);
         if (country.isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);
@@ -65,9 +55,6 @@ public class CountryService {
     }
 
     public void delete(Integer id) {
-        if (!countryRepository.existsById(id)) {
-            throw new NonExistentDataException("Data does not exist.", id);
-        }
         countryRepository.deleteById(id);
     }
 }

@@ -23,7 +23,7 @@ public class Country {
     @Column(name = "country_id", columnDefinition = "SMALLINT UNSIGNED")
     private Integer countryId;
 
-    @Column(name = "country", nullable = false, length = 50)
+    @Column(name = "country", unique = true, nullable = false, length = 50)
     private String country;
 
     @UpdateTimestamp

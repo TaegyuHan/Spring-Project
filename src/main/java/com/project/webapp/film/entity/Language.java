@@ -22,7 +22,7 @@ public class Language {
             columnDefinition = "TINYINT UNSIGNED")
     private Integer languageId;
 
-    @Column(name = "name", nullable = false, length = 20)
+    @Column(name = "name", unique = true, nullable = false, length = 20)
     private String name;
 
     @UpdateTimestamp

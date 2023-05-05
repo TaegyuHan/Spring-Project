@@ -1,6 +1,5 @@
 package com.project.webapp.film.service;
 
-import com.project.webapp.config.exception.AlreadyExistsDataException;
 import com.project.webapp.config.exception.NonExistentDataException;
 import com.project.webapp.film.dto.CategorySaveDTO;
 import com.project.webapp.film.dto.CategorySearchDTO;
@@ -19,17 +18,12 @@ import java.util.Optional;
 public class CategoryService {
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
     private ModelMapper modelMapper;
 
     public CategorySearchDTO create(CategorySaveDTO categorySaveDTO) {
-
-        if (categoryRepository.existsByName(categorySaveDTO.getName())) {
-            throw new AlreadyExistsDataException("The name of the category already exists.", categorySaveDTO);
-        }
-
         Category newEntity = modelMapper.map(categorySaveDTO, Category.class);
         Category savedEntity = categoryRepository.save(newEntity);
         return modelMapper.map(savedEntity, CategorySearchDTO.class);
@@ -47,11 +41,6 @@ public class CategoryService {
     }
 
     public CategorySearchDTO update(Integer id, CategorySaveDTO categorySaveDTO) {
-
-        if (categoryRepository.existsByName(categorySaveDTO.getName())) {
-            throw new AlreadyExistsDataException("The name of the category already exists.", categorySaveDTO);
-        }
-
         Optional<Category> category = categoryRepository.findById(id);
         if (category.isEmpty()) {
             throw new NonExistentDataException("Data does not exist.", id);

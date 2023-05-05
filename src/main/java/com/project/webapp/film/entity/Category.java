@@ -22,7 +22,7 @@ public class Category {
     @Column(name = "category_id", columnDefinition = "TINYINT UNSIGNED")
     private Integer categoryId;
 
-    @Column(name = "name", nullable = false, length = 25)
+    @Column(name = "name", unique = true, nullable = false, length = 25)
     private String name;
 
     @UpdateTimestamp
